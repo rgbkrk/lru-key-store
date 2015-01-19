@@ -56,19 +56,14 @@ func (ks *KeyStore) IsIn(user, putative string) bool {
 
 	computedMAC := ks.deriveHash(user, putative)
 
-	val, ok := ks.cache.Get(user)
-	if !ok {
-		return false
-	}
+	_, ok := ks.cache.Get(string(computedMAC))
 
-	expectedMAC := val.([]byte)
-
-	return hmac.Equal(expectedMAC, computedMAC)
+	return ok
 }
 
 // Add adds a new key to the KeyStore using the internal hashing scheme
 func (ks *KeyStore) Add(user, key string) {
 	expectedMAC := ks.deriveHash(user, key)
 
-	ks.cache.Add(user, expectedMAC)
+	ks.cache.Add(string(expectedMAC), true)
 }
