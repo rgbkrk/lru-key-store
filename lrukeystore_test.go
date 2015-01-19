@@ -23,9 +23,6 @@ func TestLRUKS(t *testing.T) {
 	if !ks.IsIn("smashwilson", "myvoiceismypassport") {
 		t.Fatalf("New key not added and retrieved successfully")
 	}
-	if !ks.IsIn("rgbkrk", "password") {
-		t.Fatalf("Key not in store after adding one other key\n")
-	}
 	ks.Add("ycombinator", "stillcantbelievethatsyourgithubusername")
 	if !ks.IsIn("ycombinator", "stillcantbelievethatsyourgithubusername") {
 		t.Fatalf("New key not added and retrieved successfully")
@@ -33,7 +30,7 @@ func TestLRUKS(t *testing.T) {
 
 	// The old rgbkrk key should be gone
 	if ks.IsIn("rgbkrk", "password") {
-		t.Fatalf("Key should have been cleared out of the cache, wasn't\n")
+		t.Fatalf("Key should have been cleared out of the cache, wasn't\ncache: %v\n", ks.cache)
 	}
 
 }
