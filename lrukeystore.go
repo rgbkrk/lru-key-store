@@ -9,11 +9,13 @@ import (
 	"github.com/hashicorp/golang-lru"
 )
 
+// KeyStore is a fixed size cache of keys using an LRU cache
 type KeyStore struct {
 	cache     *lru.Cache
 	systemKey []byte
 }
 
+// New creates a KeyStore of the given size
 func New(size int) (*KeyStore, error) {
 	cache, err := lru.New(size)
 
@@ -42,6 +44,7 @@ func New(size int) (*KeyStore, error) {
 
 }
 
+// IsIn checks to see if user has the putative key in the KeyStore
 func (ks *KeyStore) IsIn(user string, putative string) bool {
 	mac := hmac.New(sha256.New, ks.systemKey)
 	mac.Write([]byte(putative))
@@ -57,6 +60,7 @@ func (ks *KeyStore) IsIn(user string, putative string) bool {
 	return hmac.Equal(expectedMAC, computedMAC)
 }
 
+// Add adds a new key to the KeyStore using the internal hashing scheme
 func (ks *KeyStore) Add(user string, key string) {
 	mac := hmac.New(sha256.New, ks.systemKey)
 	mac.Write([]byte(key))
