@@ -1,5 +1,6 @@
-# lru-key-store
-:recycle::key: Least Recently Used Key Store
+# lru-key-store :recycle: :key:
+
+Least Recently Used Key Store
 
 Cache secrets (API keys, passwords) per user without storing them in plaintext, rotating out the least recently used.
 
