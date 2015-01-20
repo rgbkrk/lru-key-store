@@ -2,6 +2,9 @@
 
 Least Recently Used Key Store
 
+![RAM Keychain Cache](https://cloud.githubusercontent.com/assets/836375/5823789/40fe31e0-a0a5-11e4-8486-1ecffe0dc86c.jpg)
+
+
 Cache secrets (API keys, passwords) per user without storing them in plaintext, rotating out the least recently used.
 
 Entries are rotated out using the [Least Recently Used](http://en.wikipedia.org/wiki/Cache_algorithms#LRU) cache algorithm. Under the hood, we're using [hashicorp/golang-lru](https://github.com/hashicorp/golang-lru) as a thread safe fixed-size cache and mapping `user -> HMAC-SHA(user secret)`. The secret key for the HMAC-SHA is initialized per LRU Key Store.
