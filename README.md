@@ -2,7 +2,8 @@
 
 Least Recently Used Key Store
 
-![who put this umbrella here](https://cloud.githubusercontent.com/assets/836375/5823145/f2b55e6e-a09f-11e4-8ba4-e09c4f2c4156.jpg)
+![RAM Keychain Cache](https://cloud.githubusercontent.com/assets/836375/5823789/40fe31e0-a0a5-11e4-8486-1ecffe0dc86c.jpg)
+
 
 Cache secrets (API keys, passwords) per user without storing them in plaintext, rotating out the least recently used.
 
