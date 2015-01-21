@@ -1,4 +1,4 @@
-# lru-key-store :recycle: :key:
+# lru-key-store :key::convenience_store:
 
 Least Recently Used Key Store
 
