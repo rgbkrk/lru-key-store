@@ -44,27 +44,26 @@ func New(size int) (*KeyStore, error) {
 
 }
 
-// IsIn checks to see if user has the putative key in the KeyStore
-func (ks *KeyStore) IsIn(user string, putative string) bool {
+func (ks *KeyStore) deriveHash(user, key string) []byte {
 	mac := hmac.New(sha256.New, ks.systemKey)
-	mac.Write([]byte(putative))
-	computedMAC := mac.Sum(nil)
+	mac.Write([]byte(user))
+	mac.Write([]byte(key))
+	return mac.Sum(nil)
+}
 
-	val, ok := ks.cache.Get(user)
-	if !ok {
-		return false
-	}
+// IsIn checks to see if user has the putative key in the KeyStore
+func (ks *KeyStore) IsIn(user, putative string) bool {
 
-	expectedMAC := val.([]byte)
+	computedMAC := ks.deriveHash(user, putative)
 
-	return hmac.Equal(expectedMAC, computedMAC)
+	_, ok := ks.cache.Get(string(computedMAC))
+
+	return ok
 }
 
 // Add adds a new key to the KeyStore using the internal hashing scheme
-func (ks *KeyStore) Add(user string, key string) {
-	mac := hmac.New(sha256.New, ks.systemKey)
-	mac.Write([]byte(key))
-	expectedMAC := mac.Sum(nil)
+func (ks *KeyStore) Add(user, key string) {
+	expectedMAC := ks.deriveHash(user, key)
 
-	ks.cache.Add(user, expectedMAC)
+	ks.cache.Add(string(expectedMAC), true)
 }
