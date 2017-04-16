@@ -1,12 +1,11 @@
 package lrukeystore
 
 import (
-	"crypto/hmac"
 	"crypto/rand"
-	"crypto/sha256"
 	"errors"
 
 	"github.com/hashicorp/golang-lru"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // KeyStore is a fixed size cache of keys using an LRU cache
@@ -46,25 +45,27 @@ func New(size int) (*KeyStore, error) {
 
 // IsIn checks to see if user has the putative key in the KeyStore
 func (ks *KeyStore) IsIn(user string, putative string) bool {
-	mac := hmac.New(sha256.New, ks.systemKey)
-	mac.Write([]byte(putative))
-	computedMAC := mac.Sum(nil)
-
 	val, ok := ks.cache.Get(user)
 	if !ok {
+		// Fake a bcrypt comparison
+		bcrypt.CompareHashAndPassword([]byte(""), []byte(putative))
 		return false
 	}
 
-	expectedMAC := val.([]byte)
+	expectedHash := val.([]byte)
 
-	return hmac.Equal(expectedMAC, computedMAC)
+	return bcrypt.CompareHashAndPassword(expectedHash, []byte(putative)) == nil
 }
 
 // Add adds a new key to the KeyStore using the internal hashing scheme
 func (ks *KeyStore) Add(user string, key string) {
-	mac := hmac.New(sha256.New, ks.systemKey)
-	mac.Write([]byte(key))
-	expectedMAC := mac.Sum(nil)
 
-	ks.cache.Add(user, expectedMAC)
+	hashed, err := bcrypt.GenerateFromPassword([]byte(key), bcrypt.DefaultCost)
+
+	// TODO: Change tests and interface to return error
+	if err != nil {
+		panic(err)
+	}
+
+	ks.cache.Add(user, hashed)
 }
